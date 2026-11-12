@@ -15,11 +15,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const items = dataItems;
   console.log("@links", items);
 
+  // --- 1. Lógica de envio de e-mail ---
   try {
-    // --- 1. Lógica de envio de e-mail (existente) ---
     const transporter = nodemailer.createTransport({
-      service: "SMTP",
-      host: "smtp.hostinger.com",
+      host: "smtp.resend.com",
       port: 465,
       secure: true,
       auth: {
@@ -29,8 +28,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     });
 
     const mailOption = {
-      from: "Guilherme@luziac.com.br",
-      to: "Guilherme@luziac.com.br,",
+      from: "guilherme@luziac.com.br",
+      to: "guilherme@luziac.com.br",
       subject: `Contato via site - ${items?.name || items?.data?.name} da ${
         items?.data?.company || items?.data?.acting || items?.acting
       }`,
@@ -46,9 +45,25 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     await transporter.sendMail(mailOption);
     console.log("Email sent successfully.");
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    return NextResponse.json(
+      { message: "Failed to Send Email", error: (error as Error)?.message },
+      { status: 500 }
+    );
+  }
 
-    // --- 2. Lógica para enviar o Webhook (adicionada) ---
+  // --- 2. Lógica para enviar o Webhook ---
+  try {
     const webhookUrl = process.env.BOTCONVERSA || "";
+
+    if (!webhookUrl) {
+      console.warn("BOTCONVERSA não configurada; webhook ignorado.");
+      return NextResponse.json(
+        { message: "Email Sent Successfully (webhook skipped)" },
+        { status: 200 }
+      );
+    }
 
     // Enviar a requisição para o webhook
     const urlEncodedData = new URLSearchParams();
@@ -73,7 +88,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const webhookResponse = await fetch(webhookUrl, {
       method: "POST",
-      // MUDANÇA 2: Definir o header correto para este formato
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -82,25 +96,23 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     console.log("webhook form data", webhookResponse);
 
-    // Verifica se a chamada ao webhook foi bem-sucedida
     if (!webhookResponse.ok) {
-      // Se falhar, lança um erro para ser pego pelo bloco catch
       throw new Error(`Webhook failed with status: ${webhookResponse.status}`);
     }
 
     console.log("Webhook sent successfully.");
-
-    return NextResponse.json(
-      { message: "Email And Webhook Sent Successfully" },
-      { status: 200 }
-    );
   } catch (error) {
-    console.error("Failed to send email or webhook:", error);
+    console.error("Failed to send webhook:", error);
     return NextResponse.json(
-      { message: "Failed to Send Email And/or Webhook" },
+      { message: "Failed to Send Webhook", error: (error as Error)?.message },
       { status: 500 }
     );
   }
+
+  return NextResponse.json(
+    { message: "Email And Webhook Sent Successfully" },
+    { status: 200 }
+  );
 }
 
 export async function GET() {

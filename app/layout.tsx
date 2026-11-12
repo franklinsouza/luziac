@@ -94,14 +94,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-br">
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-N5RD4HDL"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-        ></iframe>
-      </noscript>
       <Script
         id="gtm-script"
         strategy="afterInteractive"
@@ -124,6 +116,14 @@ export default function RootLayout({
       <meta name="viewport" content="minimum-scale=1, initial-scale=1" />
       <meta name="language" content="pt-br"></meta>
       <body className={epilogue.className}>
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-N5RD4HDL"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-TS6PB2TC"

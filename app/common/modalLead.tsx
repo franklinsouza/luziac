@@ -59,7 +59,7 @@ export default function ModalLead() {
         setSucess(true);
         console.log(responseData);
         window.open(
-          "https://wa.me/5511992070343?text=Oii!%20Vi%20o%20site%20da%20Luziac%20e%20quero%20potencializar%20minhas%20vendas%20com%20Marketing%20Imobili%C3%A1rio,%20pode%20me%20ajudar?%22",
+          "https://wa.me/551191496-5650?text=Oii!%20Vi%20o%20site%20da%20Luziac%20e%20quero%20potencializar%20minhas%20vendas%20com%20Marketing%20Imobili%C3%A1rio,%20pode%20me%20ajudar?%22",
           "_blank"
         );
       } else {
